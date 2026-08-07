@@ -889,7 +889,7 @@ jax_multiplatform_test(
         "gpu_h100_x32",
         "gpu_b200",
     ],
-    shard_count = 20,
+    shard_count = 12,
     tags = [
         "noasan",  # Times out.
         "nomsan",  # Times out.
