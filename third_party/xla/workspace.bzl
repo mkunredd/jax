@@ -21,7 +21,14 @@ def repo():
         name = "xla",
         sha256 = XLA_SHA256,
         strip_prefix = "xla-{commit}".format(commit = XLA_COMMIT),
-        urls = tf_mirror_urls("https://github.com/openxla/xla/archive/{commit}.tar.gz".format(commit = XLA_COMMIT)),
+        # Temporarily pinned to the ROCm/xla fork for the ROCm-only fix in
+        # https://github.com/openxla/xla/pull/46878 (NCCL symmetric buffers break
+        # every multi-GPU collective on ROCm because RCCL does not implement
+        # ncclCommWindowRegister). Revert to openxla/xla once that lands upstream.
+        # The TF mirror does not carry fork archives, so the mirror URL that
+        # tf_mirror_urls() prepends will 404 and Bazel falls back to GitHub;
+        # tf_http_archive() requires a mirror as the first URL, so it is kept.
+        urls = tf_mirror_urls("https://github.com/ROCm/xla/archive/{commit}.tar.gz".format(commit = XLA_COMMIT)),
         patch_file = [
             # Add any patch files here.
             # "//third_party/xla:temporary.patch

@@ -19,7 +19,13 @@
 # b) get the sha256 hash of the commit by running:
 #    curl -L https://github.com/openxla/xla/archive/{git_hash}.tar.gz | sha256sum
 #    and update XLA_SHA256 with the result.
+#
+# NOTE: temporarily pinned to the ROCm/xla fork (see third_party/xla/workspace.bzl
+# for the download URL). This is branch rocm-jaxlib-0.11.1-alpha, which is upstream
+# 1c32308ad0599517cd4dd2cfae136851b0712bb5 plus the ROCm-only fix from
+# https://github.com/openxla/xla/pull/46878. Use the ROCm/xla archive URL when
+# recomputing the sha256 while this pin is in place.
 
 # buildifier: disable=module-docstring
-XLA_COMMIT = "1c32308ad0599517cd4dd2cfae136851b0712bb5"
-XLA_SHA256 = "3cd3fde531fa276e6a43632d472b55e03271210102f5788d0af7f2b71010f1f2"
+XLA_COMMIT = "1dd8270096465549e600e162a8f371f0bb52ea85"
+XLA_SHA256 = "962593eaa7fef316daf688f7ab72e5011cbe81cb3d3ea2aa041520015f8d9709"
