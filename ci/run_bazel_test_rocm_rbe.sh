@@ -36,8 +36,12 @@ fi
 source "ci/utilities/setup_build_environment.sh"
 
 OVERRIDE_XLA_REPO=""
+EXEC_CONFIG="--config=rocm_rbe_dynamic"
 if [[ "$JAXCI_CLONE_MAIN_XLA" == 1 ]]; then
     OVERRIDE_XLA_REPO="--override_repository=xla=${JAXCI_XLA_GIT_DIR} --override_module=xla=${JAXCI_XLA_GIT_DIR}"
+    # The overridden XLA tree only exists on the runner, so the RBE workers
+    # cannot resolve it. Run everything locally on the self-hosted GPU runner.
+    EXEC_CONFIG="--config=rocm"
 fi
 
 # Run Bazel GPU tests with RBE (single accelerator tests with one GPU apiece).
@@ -77,7 +81,7 @@ echo "::group::Bazel ROCm RBE tests" >&2
 bazel --bazelrc=build/rocm/rocm.bazelrc test \
     --profile="$TEST_ARTIFACTS_DIR/bazel_profile.json.gz" \
     --config=rocm_clang_hermetic \
-    --config=rocm_rbe_dynamic \
+    $EXEC_CONFIG \
     $OVERRIDE_XLA_REPO \
     --test_env=XLA_PYTHON_CLIENT_ALLOCATOR=platform \
     --test_output=errors \

@@ -103,6 +103,14 @@ on:
         description: "Should latest XLA be used?"
         type: string
         required: true
+      xla-repo:
+        description: "Git URL to clone XLA from when clone_main_xla=1 (empty = openxla/xla)"
+        type: string
+        default: ""
+      xla-branch:
+        description: "XLA branch to clone when clone_main_xla=1 (empty = default HEAD)"
+        type: string
+        default: ""
       xla_commit:
         description: "XLA commit SHA to check out after cloning XLA."
         type: string
@@ -132,6 +140,8 @@ jobs:
 
     env:
       JAXCI_CLONE_MAIN_XLA: ${{ inputs.clone_main_xla }}
+      JAXCI_XLA_REPO: ${{ inputs.xla-repo }}
+      JAXCI_XLA_BRANCH: ${{ inputs.xla-branch }}
       JAXCI_XLA_COMMIT: ${{ inputs.xla_commit }}
       JAXCI_HERMETIC_PYTHON_VERSION: ${{ inputs.python }}
       # Required on gfx950 with ROCm 7.13 to avoid HIP "invalid device function"

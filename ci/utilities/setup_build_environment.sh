@@ -29,8 +29,17 @@ if [[ ! $(uname -s) =~ "MSYS_NT" ]]; then
 fi
 
 function clone_main_xla() {
-  echo "Cloning XLA at HEAD to $(pwd)/xla"
-  git clone --depth=1 https://github.com/openxla/xla.git $(pwd)/xla
+  # JAXCI_XLA_REPO / JAXCI_XLA_BRANCH allow pointing the build at a fork/branch
+  # (e.g. ROCm/xla @ some devtest branch). Default is openxla/xla at HEAD.
+  local xla_repo="${JAXCI_XLA_REPO:-https://github.com/openxla/xla.git}"
+  local xla_branch="${JAXCI_XLA_BRANCH:-}"
+  if [[ -n "${xla_branch}" ]]; then
+    echo "Cloning XLA (${xla_repo} @ ${xla_branch}) to $(pwd)/xla"
+    git clone --depth=1 --branch "${xla_branch}" "${xla_repo}" $(pwd)/xla
+  else
+    echo "Cloning XLA at HEAD (${xla_repo}) to $(pwd)/xla"
+    git clone --depth=1 "${xla_repo}" $(pwd)/xla
+  fi
   cd $(pwd)/xla
   echo "XLA commit: $(git log -1 --format=%H)"
   cd ..

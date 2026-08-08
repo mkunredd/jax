@@ -197,7 +197,11 @@ jobs:
       rocm-version: ${{ matrix.rocm.wheel-version }}
       rocm-release-version: ${{ matrix.rocm.release-version }}
       manylinux-image: ${{ matrix.rocm.manylinux-image }}
-      clone_main_xla: 0
+      # Build against ROCm/xla @ magaonka/devtest instead of the XLA pinned in
+      # third_party/xla/revision.bzl, so the nightly picks up the branch tip.
+      clone_main_xla: 1
+      xla-repo: "https://github.com/ROCm/xla.git"
+      xla-branch: "magaonka/devtest"
       upload_artifacts_to_s3: true
       s3_upload_uri: 's3://jax-ci-amd/rocm-wheels/${{ github.repository }}/${{ github.ref_name }}/${{ matrix.rocm.release-version }}/wheel-tests-nightly/${{ github.run_number }}/${{ github.run_attempt }}'
 
@@ -237,7 +241,11 @@ jobs:
       rocm-version: ${{ matrix.rocm.wheel-version }}
       rocm-release-version: ${{ matrix.rocm.release-version }}
       manylinux-image: ${{ matrix.rocm.manylinux-image }}
-      clone_main_xla: 0
+      # jaxlib links XLA, so it has to be built against the same
+      # ROCm/xla @ magaonka/devtest as the plugin/pjrt wheels above.
+      clone_main_xla: 1
+      xla-repo: "https://github.com/ROCm/xla.git"
+      xla-branch: "magaonka/devtest"
       upload_artifacts_to_s3: true
       s3_upload_uri: 's3://jax-ci-amd/rocm-wheels/${{ github.repository }}/${{ github.ref_name }}/${{ matrix.rocm.release-version }}/wheel-tests-nightly/${{ github.run_number }}/${{ github.run_attempt }}'
 
@@ -309,7 +317,11 @@ jobs:
       jaxlib-version: "head"
       write_to_bazel_remote_cache: 1
       run_multiaccelerator_tests: ${{ 'true' }}
-      clone_main_xla: 0
+      # Run the Bazel ROCm tests against ROCm/xla @ magaonka/devtest instead of
+      # the XLA pinned in third_party/xla/revision.bzl.
+      clone_main_xla: 1
+      xla-repo: "https://github.com/ROCm/xla.git"
+      xla-branch: "magaonka/devtest"
 
   run-pytest-tpu:
     if: github.repository_owner == 'jax-ml'

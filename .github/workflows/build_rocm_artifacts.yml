@@ -47,6 +47,14 @@ on:
         options:
         - "1"
         - "0"
+      xla-repo:
+        description: "Git URL to clone XLA from when clone_main_xla=1 (empty = openxla/xla)"
+        type: string
+        default: ""
+      xla-branch:
+        description: "XLA branch to clone when clone_main_xla=1 (empty = default HEAD)"
+        type: string
+        default: ""
       wheel-version-suffix:
         description: "Version suffix for post-releases (e.g., .post3). Leave empty for normal builds."
         type: string
@@ -88,6 +96,14 @@ on:
         description: "Should latest XLA be used?"
         type: string
         default: "1"
+      xla-repo:
+        description: "Git URL to clone XLA from when clone_main_xla=1 (empty = openxla/xla)"
+        type: string
+        default: ""
+      xla-branch:
+        description: "XLA branch to clone when clone_main_xla=1 (empty = default HEAD)"
+        type: string
+        default: ""
       upload_artifacts_to_s3:
         description: "Should the artifacts be uploaded to S3?"
         default: true
@@ -133,6 +149,8 @@ jobs:
     env:
       JAXCI_HERMETIC_PYTHON_VERSION: "${{ inputs.python }}"
       JAXCI_CLONE_MAIN_XLA: "${{ inputs.clone_main_xla }}"
+      JAXCI_XLA_REPO: "${{ inputs.xla-repo }}"
+      JAXCI_XLA_BRANCH: "${{ inputs.xla-branch }}"
       JAXCI_OUTPUT_DIR: "${{ github.workspace }}/dist"
 
     name: "${{ inputs.artifact }}, py ${{ inputs.python }}, ROCm ${{ inputs.rocm-version }}"
