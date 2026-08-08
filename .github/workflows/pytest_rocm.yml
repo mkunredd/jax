@@ -40,6 +40,10 @@ on:
         description: "ROCm tag for container image (e.g., rocm720)"
         type: string
         default: "rocm720"
+      rocm-image-tag:
+        description: "Registry tag of the container image to run in (e.g. latest)"
+        type: string
+        default: "latest"
       rocm-release-version:
         description: "Release version for S3 path resolution (e.g., 7.2.0 or therock-latest)"
         type: string
@@ -92,6 +96,10 @@ on:
         description: "ROCm tag for container image (e.g., rocm720)"
         type: string
         default: "rocm720"
+      rocm-image-tag:
+        description: "Registry tag of the container image to run in (e.g. latest)"
+        type: string
+        default: "latest"
       rocm-release-version:
         description: "Release version for S3 path resolution (e.g., 7.2.0 or therock-latest)"
         type: string
@@ -137,7 +145,7 @@ jobs:
     continue-on-error: true
     # Run in ROCm team's GHCR container with GPU access
     container:
-      image: ghcr.io/rocm/jax-base-ubu24.${{ inputs.rocm-tag }}:latest  # zizmor: ignore[unpinned-images]
+      image: ghcr.io/rocm/jax-base-ubu24.${{ inputs.rocm-tag }}:${{ inputs.rocm-image-tag }}  # zizmor: ignore[unpinned-images]
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}

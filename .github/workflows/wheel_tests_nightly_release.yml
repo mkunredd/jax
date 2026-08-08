@@ -180,9 +180,15 @@ jobs:
           runner: ["amd-do-linux.jax.cpu"]
           artifact: ["jax-rocm-plugin", "jax-rocm-pjrt"]
           python: ["3.12", "3.13", "3.14"]
+          # The TheRock-latest entries run against the CLR-hotpatch experiment
+          # images from ROCm/rocm-jax@rock10_clr_fix (tag `clr_fix`) instead of
+          # `latest`, to check whether the rocm-systems #9019 fat-binary bound
+          # bug is what keeps the ROCm 10 half of this matrix red while the
+          # ROCm 7.14 half is green. Revert to `latest` once the fix reaches a
+          # nightly.
           rocm: [
             {label: "TheRock 7.14.0", wheel-version: "7", release-version: "7.14.0", manylinux-image: "ghcr.io/rocm/jax-manylinux_2_28-therock-7.14:latest" },
-            {label: "TheRock latest", wheel-version: "10", release-version: "therock-latest", manylinux-image: "ghcr.io/rocm/jax-manylinux_2_28-therock-latest:latest"},
+            {label: "TheRock latest", wheel-version: "10", release-version: "therock-latest", manylinux-image: "ghcr.io/rocm/jax-manylinux_2_28-therock-latest:clr_fix"},
           ]
           exclude:
             - artifact: "jax-rocm-pjrt"
@@ -222,9 +228,12 @@ jobs:
           runner: ["amd-do-linux.jax.cpu"]
           artifact: ["jax", "jaxlib"]
           python: ["3.12", "3.13", "3.14"]
+          # TheRock latest builds in the clr_fix wheel builder for the same
+          # reason as build-rocm-artifacts below: keep every wheel on the same
+          # TheRock nightly as the images the tests run in.
           rocm: [
             {label: "TheRock 7.14.0", wheel-version: "7", release-version: "7.14.0", manylinux-image: "ghcr.io/rocm/jax-manylinux_2_28-therock-7.14:latest" },
-            {label: "TheRock latest", wheel-version: "10", release-version: "therock-latest", manylinux-image: "ghcr.io/rocm/jax-manylinux_2_28-therock-latest:latest"},
+            {label: "TheRock latest", wheel-version: "10", release-version: "therock-latest", manylinux-image: "ghcr.io/rocm/jax-manylinux_2_28-therock-latest:clr_fix"},
           ]
           exclude:
             # jax is a pure-python (py3-none-any) wheel; build it once per ROCm
@@ -262,9 +271,11 @@ jobs:
         matrix:
           runner: ["amd-do-linux.jax.gpu.gfx950.1", "amd-do-linux.jax.gpu.gfx950.4", "amd-do-linux.jax.gpu.gfx950.8"]
           python: ["3.12", "3.13", "3.14"]
+          # See the note on build-rocm-artifacts for why TheRock latest uses the
+          # `clr_fix` image tag.
           rocm: [
-            {label: "TheRock 7.14.0", wheel-version: "7", release-version: "7.14.0", tag: "therock-7.14"},
-            {label: "TheRock latest", wheel-version: "10", release-version: "therock-latest", tag: "therock-latest"},
+            {label: "TheRock 7.14.0", wheel-version: "7", release-version: "7.14.0", tag: "therock-7.14", image-tag: "latest"},
+            {label: "TheRock latest", wheel-version: "10", release-version: "therock-latest", tag: "therock-latest", image-tag: "clr_fix"},
           ]
     name: "Pytest ROCm (${{ matrix.rocm.label }})"
     with:
@@ -273,6 +284,7 @@ jobs:
       rocm-version: ${{ matrix.rocm.wheel-version }}
       rocm-release-version: ${{ matrix.rocm.release-version }}
       rocm-tag: ${{ matrix.rocm.tag }}
+      rocm-image-tag: ${{ matrix.rocm.image-tag }}
       jaxlib-version: "head"
       skip-download-jaxlib-and-plugins-from-gcs: ${{inputs.skip-download-jaxlib-and-plugins-from-gcs}}
       gcs_download_uri: ${{inputs.gcs_download_uri}}
@@ -293,9 +305,11 @@ jobs:
         matrix:
           runner: ["amd-do-linux.jax.gpu.gfx950.1"]
           python: ["3.12", "3.13", "3.14"]
+          # See the note on build-rocm-artifacts for why TheRock latest uses the
+          # `clr_fix` image tag.
           rocm: [
-            {label: "TheRock 7.14.0", wheel-version: "7", release-version: "7.14.0", tag: "therock-7.14"},
-            {label: "TheRock latest", wheel-version: "10", release-version: "therock-latest", tag: "therock-latest"},
+            {label: "TheRock 7.14.0", wheel-version: "7", release-version: "7.14.0", tag: "therock-7.14", image-tag: "latest"},
+            {label: "TheRock latest", wheel-version: "10", release-version: "therock-latest", tag: "therock-latest", image-tag: "clr_fix"},
           ]
           enable-x64: [0]
     name: "Bazel ROCm (${{ matrix.rocm.label }})"
@@ -305,6 +319,7 @@ jobs:
       rocm-version: ${{ matrix.rocm.wheel-version }}
       rocm-release-version: ${{ matrix.rocm.release-version }}
       rocm-tag: ${{ matrix.rocm.tag }}
+      rocm-image-tag: ${{ matrix.rocm.image-tag }}
       enable-x64:  ${{ matrix.enable-x64 }}
       gcs_download_uri: ${{inputs.gcs_download_uri}}
       halt-for-connection: ${{inputs.halt-for-connection}}
